@@ -12,6 +12,8 @@ import { WebBrowser } from 'expo';
 import { Button } from 'react-native-paper';
 import { TextInput } from 'react-native-paper';
 import axios from 'axios';
+import ErrorDiolog from '../components/ErrorDiolog';
+import { ProgressBar, Colors } from 'react-native-paper';
 
 import { MonoText } from '../components/StyledText';
 
@@ -21,28 +23,52 @@ export default class HomeScreen extends React.Component {
   };
   state = {
     text: '',
-    persons: []
+    persons: "empty"
 
   };
   componentDidMount() {
    
   }
+  handleSubmitGoBack =(event)=>{
+      this.setState({persons:"empty"})
+  }
   handleSubmit = (event) => {
     console.log('hehehehe')
+    const headers = {
+      'Postman-Token': '3adc4471-86e8-4615-83ed-e767d62856ff',
+     'cache-control': 'no-cache',
+     'X-Okapi-Key': '/elVH9V2SD/b4w8QIoRi59OvA6Inv6EeqmGK5vsMawouEfMunDvVwS88dra85d3p'
 
-    axios.get(`https://api.laposte.fr/suivi/v1/1231231231231`,{headers:{'X-Okapi-Key':'/elVH9V2SD/b4w8QIoRi59OvA6Inv6EeqmGK5vsMawouEfMunDvVwS88dra85d3p'}})
+  }
+  fetch('https://api.laposte.fr/suivi/v1/6M16261743372',{headers:headers})  
+  .then(response =>{
+    console.log('fasak',response._bodyInit)
+    return response.json()
+      })
+      .catch(e => e)
+
+    axios.get(`https://api.laposte.fr/suivi/v1/${this.state.text}`,{headers:headers})
       .then(res => {
         const persons = res.data;
         this.setState({ persons });
 
         console.log('sadsadasdasda',persons)
       })
-      .catch(error => {console.log('error',error)
+      .catch(error => {this.setState({ persons:'error' });
+      console.log('bon',this.state)
       });
       
   }
 
   render() {
+    if(this.state.persons ==='error'){
+      return  <View style={styles.errorBlock}>
+                <Text style={styles.errorText}>Sorry No Tracking Id Found, Please Check and try again</Text>
+                <Button icon="search" mode="contained" onPress={()=>this.handleSubmitGoBack()}>
+                 GO Back
+            </Button>
+              </View>
+    }
     return (
       <View style={styles.container}>
         <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
@@ -50,13 +76,14 @@ export default class HomeScreen extends React.Component {
             <Image
               source={
                 __DEV__
-                  ? require('../assets/images/robot-dev.png')
-                  : require('../assets/images/robot-prod.png')
+                  ? require('../assets/images/logo-laposte.png')  
+                  : require('../assets/images/logo-laposte.png')
               }
               style={styles.welcomeImage}
             />
           </View>
           <TextInput
+          style={styles.textbox}
                 mode='outlined'
                label='Tracking Number'
                value={this.state.text}
@@ -64,25 +91,31 @@ export default class HomeScreen extends React.Component {
             />
 
           <View style={styles.helpContainer}>
-            <TouchableOpacity onPress={this._handleHelpPress} style={styles.helpLink}>
-              <Text style={styles.helpLinkText}>Help, it didn’t automatically reload!</Text>
-            </TouchableOpacity>
-          
-            <Button icon="add-a-photo" mode="contained" onPress={()=>this.handleSubmit()}>
+          <Button icon="search" mode="contained" onPress={()=>this.handleSubmit()}>
                  Track
             </Button>
-            <View>
-                { this.state.persons.map(person => <Text>{person.name}</Text>)}
-           </View>
+            <ProgressBar progress={1} color={Colors.red800} />
+           
+            {this.state.persons === "empty"? <Text style={styles.tabBarInfoText}>Please Enter the Tracking number</Text>:
+             <TouchableOpacity onPress={this._handleLearnMorePress} style={styles.helpLink}>
+             <View style={styles.tabBarInfoText}>
+            <Text style={styles.tabBarInfoText}>Code:{this.state.persons.code}</Text>
+            <Text style={styles.tabBarInfoText}>Date:{this.state.persons.date}</Text>
+            <Text style={styles.tabBarInfoText}>Message:{this.state.persons.message}</Text>
+            <Text style={styles.tabBarInfoText}>Status:{this.state.persons.status}</Text>
+            <Text style={styles.tabBarInfoText}>Type:{this.state.persons.type}</Text>
+            <Text style={styles.helpLinkText}>FULL TRACKING</Text>
+            </View>
+            </TouchableOpacity>          
+          }
+           
+           
+            
           </View>
         </ScrollView>
 
         <View style={styles.tabBarInfoContainer}>
           <Text style={styles.tabBarInfoText}>This is a tab bar. You can edit it in:</Text>
-
-          <View style={[styles.codeHighlightContainer, styles.navigationFilename]}>
-            <MonoText style={styles.codeHighlightText}>navigation/MainTabNavigator.js</MonoText>
-          </View>
         </View>
       </View>
     );
@@ -112,7 +145,7 @@ export default class HomeScreen extends React.Component {
   }
 
   _handleLearnMorePress = () => {
-    WebBrowser.openBrowserAsync('https://docs.expo.io/versions/latest/guides/development-mode');
+    WebBrowser.openBrowserAsync(this.state.persons.link);
   };
 
   _handleHelpPress = () => {
@@ -170,6 +203,9 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     textAlign: 'center',
   },
+  textbox:{
+margin:10
+  },
   tabBarInfoContainer: {
     position: 'absolute',
     bottom: 0,
@@ -194,6 +230,7 @@ const styles = StyleSheet.create({
     fontSize: 17,
     color: 'rgba(96,100,109, 1)',
     textAlign: 'center',
+    margin:10
   },
   navigationFilename: {
     marginTop: 5,
@@ -208,5 +245,13 @@ const styles = StyleSheet.create({
   helpLinkText: {
     fontSize: 14,
     color: '#2e78b7',
+    textAlign: 'center',
+
   },
+  errorBlock: {
+    paddingTop : 300,
+    alignItems: 'center'
+  
+  }
+
 });
