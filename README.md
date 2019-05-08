@@ -1,11 +1,10 @@
 CodeClimate : [![Maintainability](https://api.codeclimate.com/v1/badges/a99a88d28ad37a79dbf6/maintainability)](https://codeclimate.com/github/)
-
-![alt text](https://bharath.fr/images/555.jpg)
-
-
 # Lapsote Tracking
+Laposte tracking is an Android/Ios app for Tracking your shipments of Laposte in France with Tracking number
+Developed with React Native
 
-Laposte tracking is an Android app for Tracking your shipments of Laposte in France
+# Snapshorts
+![alt text](https://bharath.fr/images/555.jpg)
 
 # Requirement 
 
