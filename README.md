@@ -27,7 +27,6 @@ Replace the API key with XXXX in handleSubmit function
 ```javascript
 handleSubmit = (event) => {
   const headers = {
-      'Postman-Token': '3adc4471-86e8-4615-83ed-e767d62856ff',
       'cache-control': 'no-cache',
       'X-Okapi-Key': 'XXXXXX'
 
